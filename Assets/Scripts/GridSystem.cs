@@ -29,17 +29,17 @@ public class GridSystem : MonoBehaviour
 
     private void Update()
     {
-        /*
+        
         if (Input.GetMouseButtonDown(0))
         {
-            InsertRoom();
+            InsertRoom(roomSO);
         }
-
+        
         if (Input.GetMouseButtonDown(1))
         {
             DeleteRoom();
         }
-
+/*
         if (Input.GetKeyDown(KeyCode.R))
         {
             dir = RoomSO.GetNextDir(dir);
