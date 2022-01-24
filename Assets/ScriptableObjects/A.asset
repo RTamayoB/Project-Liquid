@@ -10,15 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2355965b5feb8184baedd99e5be872bc, type: 3}
-  m_Name: Bathroom
+  m_Name: A
   m_EditorClassIdentifier: 
-  roomName: Bathroom 1
+  roomName: Room A
   roomIcon: {fileID: 0}
   sensors:
   - {fileID: 11400000, guid: 73e8b76d8a9319149ba5dc38463bcc63, type: 2}
-  - {fileID: 11400000, guid: c9c149b21a0e8e14890a10fb56d12c1b, type: 2}
-  prefab: {fileID: 4801584760570377345, guid: 84f5a6f26a738944898ddf39c2fa5f1e, type: 3}
-  visual: {fileID: 7462563449168258851, guid: db1b3ef5dc6f3924d8335b3586f0fed0, type: 3}
+  prefab: {fileID: 1675850611865524956, guid: 43a1dd8f6b1209e4eb781c8fa9b702a8, type: 3}
+  visual: {fileID: 6751763347053139513, guid: 25e006ada2947d647a22cf00ef09b8c4, type: 3}
   width: 1
   height: 1
-  roomPosition: {x: 1, y: 1}

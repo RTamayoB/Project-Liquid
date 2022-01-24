@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class AppController : MonoBehaviour
 {
+    //Set AppRoomGrid
+    public Vector3[,] grid = new Vector3[3,4];
+
     //Current  room viewed
     public GameObject currentRoom;
     //House name
@@ -18,6 +21,7 @@ public class AppController : MonoBehaviour
 
     //House Model
     public GameObject houseModel;
+    public GameObject roomTopView;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +31,7 @@ public class AppController : MonoBehaviour
         Debug.Log("Called Start");
         for (int i = 0; i < rooms.Count; i++)
         {
-            GameObject newRoom = Instantiate(houseModel, new Vector3(0f, 7f, 16f), Quaternion.Euler(new Vector3(-90f, 0f, 0f)));
+            GameObject newRoom = Instantiate(houseModel, new Vector3(0f, 8f, 24f), Quaternion.Euler(new Vector3(-90f, 0f, 0f)));
             newRoom.GetComponentInChildren<RoomController>().roomSO = rooms[i];
         }
     }

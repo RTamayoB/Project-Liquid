@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2355965b5feb8184baedd99e5be872bc, type: 3}
-  m_Name: Kitchen
+  m_Name: B
   m_EditorClassIdentifier: 
-  roomName: Kitchen
+  roomName: B
   roomIcon: {fileID: 0}
-  sensors:
-  - {fileID: 11400000, guid: 2518a058a31490745992e2278b824e1a, type: 2}
-  prefab: {fileID: 4801584760570377345, guid: 84f5a6f26a738944898ddf39c2fa5f1e, type: 3}
-  visual: {fileID: 7462563449168258851, guid: db1b3ef5dc6f3924d8335b3586f0fed0, type: 3}
-  width: 1
+  sensors: []
+  prefab: {fileID: 7041285183876706604, guid: 042b89e0f04cf524898381b37479014b, type: 3}
+  visual: {fileID: 6265018107286570935, guid: 13283f58083ef95459944d1baa5b3981, type: 3}
+  width: 2
   height: 1
-  roomPosition: {x: 2, y: 0}

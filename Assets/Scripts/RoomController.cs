@@ -1,30 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoomController : MonoBehaviour
 {
+    //Rotate room values
     private float _sensitivity;
     private Vector3 _mouseReference;
     private Vector3 _mouseOffset;
     private Vector3 _rotation;
-    private bool _isRotating;
-    private bool isRoomSelected = false;
-    float selectedSpeed = 30;
-    public bool rotating = false;
+    public bool _isRotating;
+    bool allowRotation = false;
+
+    //Move room values
+    public bool isRoomSelected = false;
+    public bool hasMoved = false;
+    public float moveSpeed = 0.1f;
 
     public RoomSO roomSO;
 
+    public GameObject walls;
     public GameObject sensorModel;
+
+    public bool graphSet = false;
 
     void Start()
     {
         //Set values for manipulation
         _sensitivity = 0.4f;
         _rotation = Vector3.zero;
-
-        //Get Wall GameObject
-        GameObject walls = transform.Find("Walls").gameObject;
 
         //Set sensors
         for (int i = 0; i < roomSO.sensors.Count; i++)
@@ -54,8 +59,9 @@ public class RoomController : MonoBehaviour
 
     void Update()
     {
-        if (_isRotating)
+        if (_isRotating && allowRotation == true)
         {
+            Debug.Log("Rotating Object");
             // offset
             _mouseOffset = (Input.mousePosition - _mouseReference);
 
@@ -69,31 +75,69 @@ public class RoomController : MonoBehaviour
             _mouseReference = Input.mousePosition;
         }
 
-        if (isRoomSelected)
+        if (isRoomSelected && hasMoved != true)
         {
-           rotating = true;
-           moveToSelected();
+            moveToSelected();
         }
         
     }
 
     private void moveToSelected()
     {
-        float step = selectedSpeed * Time.deltaTime;
-        Vector3 to = new Vector3(-45, 0, 0);
-        transform.parent.position = Vector3.MoveTowards(transform.parent.position, new Vector3(0,3,0), step);
-        StartCoroutine(RotateImage(Quaternion.Euler(-45,0,0)));
+        if (!graphSet)
+        {
+            StartCoroutine(Test());
+        }
+        StartCoroutine(MoveRoom(new Vector3(0, 3, 0), Quaternion.Euler(-45,0,0)));
     }
 
-    IEnumerator RotateImage(Quaternion targetRotation)
+    IEnumerator MoveRoom(Vector3 targetPostition, Quaternion targetRotation)
     {
-        float moveSpeed = .05f;
-        while (transform.parent.transform.rotation.y > -45)
+        Debug.Log("Running");
+        while (transform.position != targetPostition && transform.rotation != targetRotation)
         {
-            transform.parent.transform.rotation = Quaternion.Lerp(transform.parent.transform.rotation, targetRotation, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, targetPostition, moveSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, moveSpeed * Time.deltaTime);
             yield return null;
         }
-        transform.parent.transform.rotation = targetRotation;
+        transform.position = targetPostition;
+        transform.rotation = targetRotation;
+        hasMoved = true;
+        allowRotation = true;
+        //Set Deselect to UI button
+        Button button = GameObject.FindWithTag("BackButton").GetComponent<Button>();
+        button.onClick.AddListener(DeselectRoom);
+        
+        yield return null;
+    }
+
+    IEnumerator Test()
+    {
+        graphSet = true;
+
+        Debug.Log("This is a test");
+        List<float> mockData = new List<float>();
+        mockData.Add(1.2f);
+        mockData.Add(3.9f);
+        GameObject.FindWithTag("Graph").GetComponent<PieGraph>().FillGraph(mockData);
+        yield return null;
+    }
+
+    IEnumerator DeMoveRoom(Vector3 targetPostition, Quaternion targetRotation)
+    {
+        while (transform.position != targetPostition && transform.rotation != targetRotation)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPostition, moveSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, moveSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = targetPostition;
+        transform.rotation = targetRotation;
+        hasMoved = false;
+        allowRotation = false;
+        //Set Deselect to UI button
+        Button button = GameObject.FindWithTag("BackButton").GetComponent<Button>();
+        button.onClick.AddListener(null);
         yield return null;
     }
 
@@ -114,11 +158,9 @@ public class RoomController : MonoBehaviour
     
     public void DeselectRoom()
     {
+        Debug.Log("Deselecting Room");
         isRoomSelected = false;
-
-        float step = selectedSpeed * Time.deltaTime;
-        transform.parent.position = Vector3.MoveTowards(transform.parent.position, new Vector3(0, 7, 16), step);
-        StartCoroutine(RotateImage(Quaternion.Euler(-90,0,0)));
+        StartCoroutine(DeMoveRoom(new Vector3(0, 8, 24), Quaternion.Euler(-90,0,0)));
     }
 
     void OnMouseUp()

@@ -36,6 +36,35 @@ public class PieGraph : MonoBehaviour
         }
     }
 
+    public void FillGraph(List<float> data)
+    {
+        //Delete previous children
+        for(int c = 0; c < transform.childCount; c++)
+        {
+            Destroy(transform.GetChild(c).gameObject);
+        } 
+
+        Debug.Log("Filling Graph");
+        float total = 0f;
+        float zRotation = 0f;
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            total += data[i];
+        }
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            Debug.Log("Filling " + data[i]);
+            Image newWedge = Instantiate(wedgePrefab) as Image;
+            newWedge.transform.SetParent(transform, false);
+            newWedge.color = wedgeColors[i];
+            newWedge.fillAmount = data[i] / total;
+            newWedge.transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, zRotation));
+            zRotation -= newWedge.fillAmount * 360f;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
