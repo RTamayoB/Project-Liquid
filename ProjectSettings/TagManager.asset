@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Graph
   - BackButton
+  - AppController
   layers:
   - Default
   - TransparentFX

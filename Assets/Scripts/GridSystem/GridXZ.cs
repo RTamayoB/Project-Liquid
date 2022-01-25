@@ -8,7 +8,7 @@ using UnityEngine;
  */
 public class GridXZ<TGridObject>
 {
-    public event EventHandler<OnGridValueChangedEventArgs> OnGridValueChanged;
+    public event EventHandler<OnGridValueChangedEventArgs> OnGridObjectChanged;
     public class OnGridValueChangedEventArgs : EventArgs
     {
         public int x;
@@ -19,14 +19,16 @@ public class GridXZ<TGridObject>
     private int width;
     private int height;
     private float cellSize;
+    private GameObject parent;
     private Vector3 originPosition;
     private TGridObject[,] gridArray;
 
-    public GridXZ(int width, int height, float cellSize, Vector3 originPosition, Func<GridXZ<TGridObject>, int, int, TGridObject> createGridObject)
+    public GridXZ(int width, int height, float cellSize, GameObject parent, Vector3 originPosition, Func<GridXZ<TGridObject>, int, int, TGridObject> createGridObject)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
+        this.parent = parent;
         this.originPosition = originPosition;
 
         gridArray = new TGridObject[width, height];
@@ -48,7 +50,7 @@ public class GridXZ<TGridObject>
             {
                 for (int z = 0; z < gridArray.GetLength(1); z++)
                 {
-                    debugTextArray[x, z] = TextUtils.CreateWorldText(gridArray[x, z]?.ToString(), null, GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * .5f, 20, Color.white, TextAnchor.MiddleCenter, TextAlignment.Left, 5000, new Vector3(cellSize, 0, cellSize));
+                    debugTextArray[x, z] = TextUtils.CreateWorldText(gridArray[x, z]?.ToString(), parent.transform, GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * .5f, 20, Color.white, TextAnchor.MiddleCenter, TextAlignment.Left, 5000, new Vector3(cellSize, 0, cellSize));
                     Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.white, 100f);
                     Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.white, 100f);
                 }
@@ -56,7 +58,7 @@ public class GridXZ<TGridObject>
             Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
             Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
-            OnGridValueChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
+            OnGridObjectChanged += (object sender, OnGridValueChangedEventArgs eventArgs) =>
             {
                 debugTextArray[eventArgs.x, eventArgs.z].text = gridArray[eventArgs.x, eventArgs.z]?.ToString();
             };
@@ -85,7 +87,7 @@ public class GridXZ<TGridObject>
         return position;
     }
 
-    public void GetXY(Vector3 worldPosition, out int x, out int z)
+    public void GetXZ(Vector3 worldPosition, out int x, out int z)
     {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
@@ -96,19 +98,19 @@ public class GridXZ<TGridObject>
         if (x >= 0 && z >= 0 && x < width && z < height)
         {
             gridArray[x, z] = value;
-            if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, z = z });
+            TriggerGridObjectChanged(x, z);
         }
     }
 
     public void TriggerGridObjectChanged(int x, int z)
     {
-        if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, z = z });
+        OnGridObjectChanged?.Invoke(this, new OnGridValueChangedEventArgs { x = x, z = z });
     }
 
     public void SetGridObject(Vector3 worldPosition, TGridObject value)
     {
         int x, z;
-        GetXY(worldPosition, out x, out z);
+        GetXZ(worldPosition, out x, out z);
         SetGridObject(x, z, value);
     }
 
@@ -127,7 +129,15 @@ public class GridXZ<TGridObject>
     public TGridObject GetGridObject(Vector3 worldPosition)
     {
         int x, z;
-        GetXY(worldPosition, out x, out z);
+        GetXZ(worldPosition, out x, out z);
         return GetGridObject(x, z);
-    } 
+    }
+
+    public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
+    {
+        return new Vector2Int(
+            Mathf.Clamp(gridPosition.x, 0, width - 1),
+            Mathf.Clamp(gridPosition.y, 0, height - 1)
+        );
+    }
 }

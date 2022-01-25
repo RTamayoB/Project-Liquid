@@ -20,4 +20,4 @@ MonoBehaviour:
   visual: {fileID: 7462563449168258851, guid: db1b3ef5dc6f3924d8335b3586f0fed0, type: 3}
   width: 1
   height: 1
-  roomPosition: {x: 2, y: 0}
+  roomPosition: {x: 2, y: 1}

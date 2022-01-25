@@ -32,4 +32,6 @@ public class TextUtils
         textMesh.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
         return textMesh;
     }
+
+
 }
