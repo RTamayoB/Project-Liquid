@@ -17,4 +17,4 @@ MonoBehaviour:
   room: {fileID: 11400000, guid: aa8588cd0aebaec4b81da8b53200a8c0, type: 2}
   wall: 1
   wallPosition: {x: 0, y: 0, z: 0}
-  sensorValue: 23
+  sensorValue: 21

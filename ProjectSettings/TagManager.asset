@@ -7,6 +7,7 @@ TagManager:
   - Graph
   - BackButton
   - AppController
+  - Wedge
   layers:
   - Default
   - TransparentFX

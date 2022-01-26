@@ -23,6 +23,7 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private Vector3 origin = new Vector3(-100,0,200);
 
     [SerializeField] private GameObject camera;
+    [SerializeField] private GameObject pieGraph;
 
     private void Awake()
     {
@@ -49,8 +50,19 @@ public class GridSystem : MonoBehaviour
             Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
             grid.GetXZ(mousePosition, out int x, out int z);
             PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
-            Debug.Log("Room Position: " + placedRoom.gameObject.transform.position);
-            camera.GetComponent<CameraController>().SetCameraToRoom(placedRoom.gameObject.transform.position);
+            if(placedRoom != null)
+            {
+                camera.GetComponent<CameraController>().SetCameraToRoom(placedRoom.gameObject.transform.position);
+                //Set PieGraph
+                RoomSO roomSO = placedRoom.GetRoomSO();
+                List<float> sensorList = new List<float>();
+                foreach(SensorSO sensorSO in roomSO.sensors)
+                {
+                    sensorList.Add(sensorSO.sensorValue);
+                }
+                pieGraph.GetComponent<PieGraph>().FillGraph(sensorList);
+            }
+            
         }
         /*
         if (Input.GetMouseButtonDown(0) && roomSO != null)

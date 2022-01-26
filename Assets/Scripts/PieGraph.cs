@@ -41,7 +41,10 @@ public class PieGraph : MonoBehaviour
         //Delete previous children
         for(int c = 0; c < transform.childCount; c++)
         {
-            Destroy(transform.GetChild(c).gameObject);
+            if (transform.GetChild(c).CompareTag("Wedge"))
+            {
+                Destroy(transform.GetChild(c).gameObject);
+            }
         } 
 
         Debug.Log("Filling Graph");
