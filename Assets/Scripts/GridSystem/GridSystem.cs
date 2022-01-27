@@ -25,6 +25,8 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private GameObject camera;
     [SerializeField] private GameObject pieGraph;
 
+    [SerializeField] private AppController appController;
+
     private void Awake()
     {
         Instance = this;
@@ -50,20 +52,32 @@ public class GridSystem : MonoBehaviour
             Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
             grid.GetXZ(mousePosition, out int x, out int z);
             PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
-            if(placedRoom != null)
+            if (placedRoom != null)
             {
-                camera.GetComponent<CameraController>().SetCameraToRoom(placedRoom.gameObject.transform.position);
-                //Set PieGraph
-                RoomSO roomSO = placedRoom.GetRoomSO();
-                List<float> sensorList = new List<float>();
-                foreach(SensorSO sensorSO in roomSO.sensors)
+                if (appController.editMode)
                 {
-                    sensorList.Add(sensorSO.sensorValue);
+                    roomSO = placedRoom.GetRoomSO();
+                    DeleteRoom(placedRoom);
+                    RefreshSelectedObjectType();
                 }
-                pieGraph.GetComponent<PieGraph>().FillGraph(sensorList);
+                else
+                {
+                    //Set responsabilities correctly
+                    camera.GetComponent<CameraController>().SetCameraToRoom(placedRoom.gameObject.transform.position);
+                    //Set PieGraph
+                    RoomSO roomSO = placedRoom.GetRoomSO();
+                    appController.roomViewed = roomSO;
+                    appController.goBackButton.SetActive(true);
+                    List<float> sensorList = new List<float>();
+                    foreach (SensorSO sensorSO in roomSO.sensors)
+                    {
+                        sensorList.Add(sensorSO.sensorValue);
+                    }
+                    pieGraph.GetComponent<PieGraph>().FillGraph(sensorList);
+                }     
             }
-            
         }
+
         /*
         if (Input.GetMouseButtonDown(0) && roomSO != null)
         {
@@ -85,7 +99,7 @@ public class GridSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha0)) { DeselectObjectType(); }
         */
-    }
+    } 
 
     public void InsertRoom(RoomSO room)
     {
@@ -162,12 +176,14 @@ public class GridSystem : MonoBehaviour
         return false;
     }
 
-    public void DeleteRoom()
+    public void DeleteRoom(PlacedRoom_Done placedRoom)
     {
+        /*
         Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
         if (grid.GetGridObject(mousePosition) != null)
         {
             PlacedRoom_Done placedRoom = grid.GetGridObject(mousePosition).GetPlacedRoom();
+        */
             if (placedRoom != null)
             {
                 placedRoom.DestroySelf();
@@ -180,7 +196,7 @@ public class GridSystem : MonoBehaviour
 
                 placedRoomsList.Remove(placedRoom.GetRoomSO());
             }
-        }
+        //}
     }
 
     private void DeselectObjectType()

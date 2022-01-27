@@ -45,4 +45,12 @@ public class CameraController : MonoBehaviour
             StartCoroutine(MoveRoom(targetWithOffset, Quaternion.Euler(45,0,0)));
         }
     }
+
+    public void MoveCamera(Vector3 targetPosition, Quaternion rotation)
+    {
+        if (!GameObject.FindWithTag("AppController").GetComponent<AppController>().editMode)
+        {
+            StartCoroutine(MoveRoom(targetPosition, rotation));
+        }
+    }
 }
