@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GridSystem : MonoBehaviour
 {
@@ -27,6 +28,12 @@ public class GridSystem : MonoBehaviour
 
     [SerializeField] private AppController appController;
 
+    public float ClickDuration = 2;
+    public UnityEvent OnLongClick;
+
+    bool clicking = false;
+    float totalDownTime = 0;
+
     private void Awake()
     {
         Instance = this;
@@ -49,6 +56,26 @@ public class GridSystem : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            totalDownTime = 0;
+            clicking = true;
+        }
+
+        if(clicking && Input.GetMouseButton(0))
+        {
+            totalDownTime += Time.deltaTime;
+            if(totalDownTime >= ClickDuration)
+            {
+                clicking = false;
+                OnLongClick.Invoke();
+            }
+        }
+
+        if(clicking && Input.GetMouseButtonUp(0))
+        {
+            clicking = false;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
             Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
             grid.GetXZ(mousePosition, out int x, out int z);
             PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
@@ -63,7 +90,9 @@ public class GridSystem : MonoBehaviour
                 else
                 {
                     //Set responsabilities correctly
-                    camera.GetComponent<CameraController>().SetCameraToRoom(placedRoom.gameObject.transform.position);
+                    CameraController controller = camera.GetComponent<CameraController>();
+                    controller.SetObjectToView(placedRoom.GetToBeViewed());
+                    controller.SetCameraToRoom(placedRoom.gameObject.transform.position);
                     //Set PieGraph
                     RoomSO roomSO = placedRoom.GetRoomSO();
                     appController.roomViewed = roomSO;
@@ -100,6 +129,8 @@ public class GridSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha0)) { DeselectObjectType(); }
         */
     } 
+
+    OnLongClick()
 
     public void InsertRoom(RoomSO room)
     {

@@ -38,7 +38,9 @@ public class AppController : MonoBehaviour
         //pos = 22,63,-32
         //rot = 65,0,0
 
-        camera.GetComponent<CameraController>().MoveCamera(new Vector3(22, 63, -32), Quaternion.Euler(65, 0, 0));
+        CameraController controller = camera.GetComponent<CameraController>();
+        controller.MoveCamera(new Vector3(22, 63, -32), Quaternion.Euler(65, 0, 0));
+        controller.SetObjectToView(null);
         roomViewed = null;
     }
 

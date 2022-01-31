@@ -9,7 +9,8 @@ public class PlacedRoom_Done : MonoBehaviour
     {
         Transform placedRoomTransform = Instantiate(roomSO.prefab, worldPosition, Quaternion.Euler(0, roomSO.GetRotationAngle(dir), 0)).transform;
         PlacedRoom_Done placedRoom = placedRoomTransform.GetComponent<PlacedRoom_Done>();
-        placedRoom.Setup(roomSO, origin, dir);
+        Transform toBeViewed = placedRoomTransform.Find("RoomVisual").Find("RoomModel").Find("ToViewTest");
+        placedRoom.Setup(roomSO, origin, dir, toBeViewed);
 
         return placedRoom;
     }
@@ -17,12 +18,19 @@ public class PlacedRoom_Done : MonoBehaviour
     private RoomSO roomSO;
     private Vector2Int origin;
     private RoomSO.Dir dir;
+    [SerializeField]private Transform toBeViewed;
 
-    private void Setup(RoomSO roomSO, Vector2Int origin, RoomSO.Dir dir)
+    private void Setup(RoomSO roomSO, Vector2Int origin, RoomSO.Dir dir, Transform toBeViewed)
     {
         this.roomSO = roomSO;
         this.origin = origin;
         this.dir = dir;
+        this.toBeViewed = toBeViewed;
+    }
+
+    public Transform GetToBeViewed()
+    {
+        return toBeViewed;
     }
 
     public RoomSO GetRoomSO()
