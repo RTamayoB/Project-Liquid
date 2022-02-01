@@ -128,9 +128,12 @@ public class GridSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha0)) { DeselectObjectType(); }
         */
-    } 
+    }
 
-    OnLongClick()
+    void Click()
+    {
+
+    }
 
     public void InsertRoom(RoomSO room)
     {
