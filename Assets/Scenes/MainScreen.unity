@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -391,6 +391,7 @@ MonoBehaviour:
   members: 6
   camera: {fileID: 963194225}
   editMode: 0
+  title: {fileID: 71426071}
   goBackButton: {fileID: 1944514998}
   editButton: {fileID: 1428706804}
 --- !u!4 &238796833

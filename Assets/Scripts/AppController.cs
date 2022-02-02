@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AppController : MonoBehaviour
 {
@@ -18,13 +19,15 @@ public class AppController : MonoBehaviour
 
     public bool editMode;
 
+    [SerializeField] private Text title;
+
     public GameObject goBackButton;
     public GameObject editButton;
 
     // Start is called before the first frame update
     void Start()
     {
-       
+        title.text = houseName;
     }
 
     // Update is called once per frame
