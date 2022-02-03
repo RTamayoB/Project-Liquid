@@ -41,7 +41,7 @@ public class AppController : MonoBehaviour
         goRightButton.SetActive(false);
         goBackButton.SetActive(false);
         pieGraph.MakeGraph();
-        cameraController.MoveCamera(new Vector3(22, 63, -32), Quaternion.Euler(65, 0, 0));
+        cameraController.MoveCamera(new Vector3(22, 75, -38), Quaternion.Euler(65, 0, 0));
         cameraController.SetObjectToView(null);
         roomViewed = null;
         title.text = houseName;

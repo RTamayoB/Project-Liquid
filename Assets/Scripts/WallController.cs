@@ -23,4 +23,9 @@ public class WallController : MonoBehaviour
     {
         renderer.material = solidMaterial;
     }
+
+    private void OnDestroy()
+    {
+        
+    }
 }
