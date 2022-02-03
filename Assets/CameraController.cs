@@ -6,7 +6,6 @@ public class CameraController : MonoBehaviour
 {
     public float moveSpeed = 0.5f;
     private Transform camera;
-    [SerializeField] private bool zoomOnRoom = false;
     [SerializeField] private Transform objectToView;
     [SerializeField] private List<WallController> currentlyInTheWay;
     [SerializeField] private List<WallController> alreadyTransparent;
@@ -21,7 +20,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (zoomOnRoom && objectToView != null)
+        if (objectToView != null)
         {
             Debug.Log("Zooming");
             GetObjectsInTheWay();
@@ -29,7 +28,7 @@ public class CameraController : MonoBehaviour
             MakeObjectsSolid();
             MakeObjectsTransparent();
         }
-        else
+        if(objectToView == null)
         {
             Debug.Log("Not Zooming");
             GetObjectsInTheWay();
@@ -134,8 +133,7 @@ public class CameraController : MonoBehaviour
     {
         if (!GameObject.FindWithTag("AppController").GetComponent<AppController>().editMode)
         {
-            zoomOnRoom = true;
-            Vector3 targetWithOffset = targetPosition + new Vector3(5.5f, 8.8f, -15f);
+            Vector3 targetWithOffset = objectToView.transform.position + new Vector3(0, 6, -25f);
             Debug.Log("Target offset: " + targetWithOffset);
             StartCoroutine(MoveRoom(targetWithOffset, Quaternion.Euler(30,0,0)));
         }
@@ -145,8 +143,29 @@ public class CameraController : MonoBehaviour
     {
         if (!GameObject.FindWithTag("AppController").GetComponent<AppController>().editMode)
         {
-            zoomOnRoom = false;
             StartCoroutine(MoveRoom(targetPosition, rotation));
+        }
+    }
+
+    public void RotateArround(GameObject gameObject, Vector3 axis, float angle, float time)
+    {
+        StartCoroutine(RotateArroundRoom(gameObject, axis, angle, time));
+    }
+
+    private IEnumerator RotateArroundRoom(GameObject gameObject, Vector3 axis, float angle, float inTimeSecs)
+    {
+        float currentTime = 0.0f;
+        float angleDelta = angle / inTimeSecs; //how many degress to rotate in one second
+        float ourTimeDelta = 0;
+        while (currentTime < inTimeSecs)
+        {
+            currentTime += Time.deltaTime;
+            ourTimeDelta = Time.deltaTime;
+            //Make sure we dont spin past the angle we want.
+            if (currentTime > inTimeSecs)
+                ourTimeDelta -= (currentTime - inTimeSecs);
+            gameObject.transform.RotateAround(objectToView.transform.position, axis, angleDelta * ourTimeDelta);
+            yield return null;
         }
     }
 }

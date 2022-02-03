@@ -13,8 +13,7 @@ public class GridSystem : MonoBehaviour
     public event EventHandler OnObjectPlaced;
 
     private GridXZ<GridObj> grid;
-    [SerializeField] private RoomSO[] roomSOList = null;
-    [SerializeField] private List<RoomSO> placedRoomsList = null;
+    [SerializeField] public List<RoomSO> placedRoomsList = null;
     [SerializeField] private RoomSO roomSO;
     private RoomSO.Dir dir;
 
@@ -24,11 +23,13 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private Vector3 origin = new Vector3(-100,0,200);
 
     [SerializeField] private GameObject camera;
+    private CameraController cameraController;
     [SerializeField] private GameObject pieGraph;
+    private PieGraph pie;
 
     [SerializeField] private AppController appController;
 
-    public float ClickDuration = 2;
+    public float ClickDuration = 1f;
     public UnityEvent OnLongClick;
 
     bool clicking = false;
@@ -45,8 +46,11 @@ public class GridSystem : MonoBehaviour
 
     public void Start()
     {
+        cameraController = camera.GetComponent<CameraController>();
+        pie = pieGraph.GetComponent<PieGraph>();
+        OnLongClick.AddListener(LongClick);
         //Set all Rooms
-        for(int x = 0; x < placedRoomsList.Count; x++)
+        for (int x = 0; x < placedRoomsList.Count; x++)
         {
             InsertRoom(placedRoomsList[x]);
         }
@@ -58,6 +62,36 @@ public class GridSystem : MonoBehaviour
         {
             totalDownTime = 0;
             clicking = true;
+
+            Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
+            grid.GetXZ(mousePosition, out int x, out int z);
+            PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
+            if (placedRoom != null)
+            {
+                if (!appController.editMode)
+                {
+                    cameraController.SetObjectToView(placedRoom.GetToBeViewed());
+                    cameraController.SetCameraToRoom(placedRoom.gameObject.transform.position);
+                    //Set PieGraph
+                    RoomSO roomSO = placedRoom.GetRoomSO();
+                    appController.roomViewed = roomSO;
+                    appController.title.text = roomSO.roomName;
+                    appController.goLeftButton.SetActive(true);
+                    appController.goRightButton.SetActive(true);
+                    appController.goBackButton.SetActive(true);
+                    List<float> sensorList = new List<float>();
+                    foreach (SensorSO sensorSO in roomSO.sensors)
+                    {
+                        sensorList.Add(sensorSO.sensorValue);
+                    }
+                    pie.FillGraph(sensorList);
+                }
+            }
+            if (appController.editMode && roomSO != null)
+            {
+                Debug.Log("Placing Room");
+                ReInsertRoom(roomSO);
+            }
         }
 
         if(clicking && Input.GetMouseButton(0))
@@ -74,38 +108,6 @@ public class GridSystem : MonoBehaviour
         {
             clicking = false;
         }
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
-            grid.GetXZ(mousePosition, out int x, out int z);
-            PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
-            if (placedRoom != null)
-            {
-                if (appController.editMode)
-                {
-                    roomSO = placedRoom.GetRoomSO();
-                    DeleteRoom(placedRoom);
-                    RefreshSelectedObjectType();
-                }
-                else
-                {
-                    //Set responsabilities correctly
-                    CameraController controller = camera.GetComponent<CameraController>();
-                    controller.SetObjectToView(placedRoom.GetToBeViewed());
-                    controller.SetCameraToRoom(placedRoom.gameObject.transform.position);
-                    //Set PieGraph
-                    RoomSO roomSO = placedRoom.GetRoomSO();
-                    appController.roomViewed = roomSO;
-                    appController.goBackButton.SetActive(true);
-                    List<float> sensorList = new List<float>();
-                    foreach (SensorSO sensorSO in roomSO.sensors)
-                    {
-                        sensorList.Add(sensorSO.sensorValue);
-                    }
-                    pieGraph.GetComponent<PieGraph>().FillGraph(sensorList);
-                }     
-            }
-        }
 
         /*
         if (Input.GetMouseButtonDown(0) && roomSO != null)
@@ -116,13 +118,16 @@ public class GridSystem : MonoBehaviour
         {
             DeleteRoom();
         }
-        
+        */
         if (Input.GetKeyDown(KeyCode.R))
         {
-            dir = RoomSO.GetNextDir(dir);
-            Debug.Log("" + dir);
+            if (appController.editMode)
+            {
+                dir = RoomSO.GetNextDir(dir);
+                Debug.Log("" + dir);
+            }
         }
-
+        /*
         if (Input.GetKeyDown(KeyCode.Alpha1)) { roomSO = roomSOList[0]; RefreshSelectedObjectType(); }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { roomSO = roomSOList[1]; RefreshSelectedObjectType(); }
 
@@ -130,9 +135,17 @@ public class GridSystem : MonoBehaviour
         */
     }
 
-    void Click()
+    void LongClick()
     {
-
+        Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
+        grid.GetXZ(mousePosition, out int x, out int z);
+        PlacedRoom_Done placedRoom = grid.GetGridObject(x, z).GetPlacedRoom();
+        if (appController.editMode)
+        {
+            roomSO = placedRoom.GetRoomSO();
+            DeleteRoom(placedRoom);
+            RefreshSelectedObjectType();
+        }
     }
 
     public void InsertRoom(RoomSO room)
@@ -163,9 +176,13 @@ public class GridSystem : MonoBehaviour
 
         if (canBuild)
         {
+            Debug.Log("Can build");
             Vector2Int rotationOffset = room.GetRotationOffset(dir);
             Vector3 roomWorldPosition = grid.GetWorldPosition(placedRoomOrigin.x, placedRoomOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * grid.GetCellSize();
-
+            Debug.Log(roomWorldPosition);
+            Debug.Log(placedRoomOrigin);
+            Debug.Log(dir);
+            Debug.Log(room);
             PlacedRoom_Done placedRoom = PlacedRoom_Done.Create(roomWorldPosition, placedRoomOrigin, dir, room);
 
             foreach (Vector2Int gridPosition in gridPositionList)
@@ -181,6 +198,57 @@ public class GridSystem : MonoBehaviour
         {
             Debug.Log("Can't build");
         }
+    }
+
+    public void ReInsertRoom(RoomSO room)
+    {
+        //Room is Placed based on the MousePosition
+        //This is used if you put room by mousePosition
+        Vector3 mousePosition = MouseUtils.GetMouseWorldPosition();
+        grid.GetXZ(mousePosition, out int x, out int z);
+
+        Vector2Int placedRoomOrigin = new Vector2Int(x, z);
+        placedRoomOrigin = grid.ValidateGridPosition(placedRoomOrigin);
+
+        List<Vector2Int> gridPositionList = room.GetGridPositionList(placedRoomOrigin, dir);
+
+        //Test CanBuild
+        bool canBuild = true;
+        foreach (Vector2Int gridPosition in gridPositionList)
+        {
+            if (!grid.GetGridObject(gridPosition.x, gridPosition.y).CanBuild())
+            {
+                //Cannot build here
+                canBuild = false;
+                break;
+            }
+        }
+
+        if (canBuild)
+        {
+            Debug.Log("Can build");
+            Vector2Int rotationOffset = room.GetRotationOffset(dir);
+            Vector3 roomWorldPosition = grid.GetWorldPosition(placedRoomOrigin.x, placedRoomOrigin.y) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * grid.GetCellSize();
+            Debug.Log(roomWorldPosition);
+            Debug.Log(placedRoomOrigin);
+            Debug.Log(dir);
+            Debug.Log(room);
+            PlacedRoom_Done placedRoom = PlacedRoom_Done.Create(roomWorldPosition, placedRoomOrigin, dir, room);
+
+            foreach (Vector2Int gridPosition in gridPositionList)
+            {
+                grid.GetGridObject(gridPosition.x, gridPosition.y).SetPlacedRoom(placedRoom);
+            }
+
+            placedRoomsList.Add(room);
+
+            OnObjectPlaced?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            Debug.Log("Can't build");
+        }
+        DeselectObjectType();
     }
 
     public bool NextToRoom(Vector2Int position)

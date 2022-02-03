@@ -15,5 +15,5 @@ public class SensorSO : ScriptableObject
     public Vector3 wallPosition;
     //rn is liters
     public float sensorValue;
-
+    public List<float> dailyLog;
 }

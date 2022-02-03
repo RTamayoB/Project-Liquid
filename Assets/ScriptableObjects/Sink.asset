@@ -18,3 +18,7 @@ MonoBehaviour:
   wall: 0
   wallPosition: {x: 0, y: 0, z: 0}
   sensorValue: 8
+  dailyLog:
+  - 2
+  - 3
+  - 3

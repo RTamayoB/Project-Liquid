@@ -5,46 +5,47 @@ using UnityEngine.UI;
 
 public class AppController : MonoBehaviour
 {
-    //Current  room viewed
     public RoomSO roomViewed;
-    //House name
-    public string houseName = "La Baticueva";
-    //Owner's name
-    //Later on we can add profiles (this is only really useful if we add other types of sensors
+    public string houseName = "Casa de Rafael";
     public string owner = "Rafael";
-    //Number of house members
     public int members = 6;
-
-    public GameObject camera;
-
     public bool editMode;
 
-    [SerializeField] private Text title;
+    [SerializeField] public Text title;
+
+    public GameObject camera;
+    private CameraController cameraController;
+
+    public PieGraph pieGraph;
 
     public GameObject goBackButton;
     public GameObject editButton;
+    public Image editButtonImage;
+    public GameObject goLeftButton;
+    public GameObject goRightButton;
+
 
     // Start is called before the first frame update
     void Start()
     {
         title.text = houseName;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        cameraController = camera.GetComponent<CameraController>();
+        editButtonImage = editButton.GetComponent<Image>();
     }
 
     public void GoBack()
     {
         //pos = 22,63,-32
         //rot = 65,0,0
-
-        CameraController controller = camera.GetComponent<CameraController>();
-        controller.MoveCamera(new Vector3(22, 63, -32), Quaternion.Euler(65, 0, 0));
-        controller.SetObjectToView(null);
+        goLeftButton.SetActive(false);
+        goRightButton.SetActive(false);
+        goBackButton.SetActive(false);
+        pieGraph.MakeGraph();
+        cameraController.MoveCamera(new Vector3(22, 63, -32), Quaternion.Euler(65, 0, 0));
+        cameraController.SetObjectToView(null);
         roomViewed = null;
+        title.text = houseName;
+        
     }
 
     public void Edit()
@@ -53,10 +54,23 @@ public class AppController : MonoBehaviour
         {
             case true:
                 editMode = false;
+                editButtonImage.color = Color.white;
                 break;
             case false:
                 editMode = true;
+                editButtonImage.color = Color.green;
                 break;
         } 
     }
+
+    public void GoRight()
+    {
+        cameraController.RotateArround(camera.gameObject, -Vector3.up, 90, 1f);
+    }
+
+    public void GoLeft()
+    {
+        cameraController.RotateArround(camera.gameObject, Vector3.up, 90, 1f);
+    }
+
 }

@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2355965b5feb8184baedd99e5be872bc, type: 3}
   m_Name: Kitchen
   m_EditorClassIdentifier: 
-  roomName: Kitchen
+  roomName: Cocina
   roomIcon: {fileID: 0}
   sensors:
   - {fileID: 11400000, guid: 2518a058a31490745992e2278b824e1a, type: 2}
+  - {fileID: 11400000, guid: 4070203e2682cfb4b822cb428afbced7, type: 2}
   prefab: {fileID: 4801584760570377345, guid: 84f5a6f26a738944898ddf39c2fa5f1e, type: 3}
   visual: {fileID: 7462563449168258851, guid: db1b3ef5dc6f3924d8335b3586f0fed0, type: 3}
   width: 1
   height: 1
-  roomPosition: {x: 2, y: 1}
+  roomPosition: {x: 0, y: 1}

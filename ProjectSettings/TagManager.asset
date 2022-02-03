@@ -8,6 +8,8 @@ TagManager:
   - BackButton
   - AppController
   - Wedge
+  - SensorActivity
+  - Activity
   layers:
   - Default
   - TransparentFX

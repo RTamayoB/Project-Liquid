@@ -6,9 +6,12 @@ using UnityEngine.UI;
 public class PieGraph : MonoBehaviour
 {
 
-    public float[] values;
     public Color[] wedgeColors;
     public Image wedgePrefab;
+    [SerializeField]private List<float> values = new List<float>();
+    [SerializeField]private GameObject noDataText;
+
+    [SerializeField] GridSystem gridManager;
 
     // Start is called before the first frame update
     void Start()
@@ -16,16 +19,25 @@ public class PieGraph : MonoBehaviour
         MakeGraph();
     }
 
-    void MakeGraph()
+    public void MakeGraph()
     {
+        //Delete previous children
+        for (int c = 0; c < transform.childCount; c++)
+        {
+            if (transform.GetChild(c).CompareTag("Wedge"))
+            {
+                Destroy(transform.GetChild(c).gameObject);
+            }
+        }
+
         float total = 0f;
         float zRotation = 0f;
-        for (int i = 0; i < values.Length; i++)
+        for (int i = 0; i < values.Count; i++)
         {
             total += values[i];
         }
 
-        for (int i = 0; i < values.Length; i++)
+        for (int i = 0; i < values.Count; i++)
         {
             Image newWedge = Instantiate(wedgePrefab) as Image;
             newWedge.transform.SetParent(transform, false);
@@ -71,6 +83,13 @@ public class PieGraph : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(transform.childCount == 2)
+        {
+            noDataText.SetActive(true);
+        }
+        else
+        {
+            noDataText.SetActive(false);
+        }
     }
 }

@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2355965b5feb8184baedd99e5be872bc, type: 3}
   m_Name: Bathroom
   m_EditorClassIdentifier: 
-  roomName: Bathroom 1
+  roomName: "Ba\xF1o"
   roomIcon: {fileID: 0}
   sensors:
   - {fileID: 11400000, guid: 73e8b76d8a9319149ba5dc38463bcc63, type: 2}
   - {fileID: 11400000, guid: c9c149b21a0e8e14890a10fb56d12c1b, type: 2}
-  prefab: {fileID: 4801584760570377345, guid: 84f5a6f26a738944898ddf39c2fa5f1e, type: 3}
-  visual: {fileID: 7462563449168258851, guid: db1b3ef5dc6f3924d8335b3586f0fed0, type: 3}
+  - {fileID: 11400000, guid: 6e81d6e2b7561114cbd16203d3f9dfa2, type: 2}
+  prefab: {fileID: 4801584760570377345, guid: 17c0de3c65eeff64a9dd2a43a4f8456c, type: 3}
+  visual: {fileID: 7462563449168258851, guid: e2313224bba7616448001919772c3231, type: 3}
   width: 1
   height: 1
-  roomPosition: {x: 1, y: 1}
+  roomPosition: {x: 3, y: 1}

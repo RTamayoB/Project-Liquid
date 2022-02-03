@@ -9,7 +9,7 @@ public class PlacedRoom_Done : MonoBehaviour
     {
         Transform placedRoomTransform = Instantiate(roomSO.prefab, worldPosition, Quaternion.Euler(0, roomSO.GetRotationAngle(dir), 0)).transform;
         PlacedRoom_Done placedRoom = placedRoomTransform.GetComponent<PlacedRoom_Done>();
-        Transform toBeViewed = placedRoomTransform.Find("RoomVisual").Find("RoomModel").Find("ToViewTest");
+        Transform toBeViewed = placedRoomTransform.GetChild(0).Find("ToView");
         placedRoom.Setup(roomSO, origin, dir, toBeViewed);
 
         return placedRoom;
